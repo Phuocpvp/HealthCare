@@ -13,14 +13,22 @@ import { JwtAuthGuard } from 'src/configuration/jwt-auth.guard';
 import { Request } from 'express';
 
 @Controller('user')
-@UseGuards(JwtAuthGuard)
+// @UseGuards(JwtAuthGuard)
 export class UserController {
    constructor(private readonly userService: UserService) {}
 
    // For Admin
    @Get()
-   async getAllUsers(): Promise<User[]> {
+   async getAllUsers(){
+      // const users = await this.userService.findAll();
+      // console.log('Fetched users:', users);
+      // return users;
       return this.userService.findAll();
+   }
+
+   @Get(':username')
+   async findByUsername(@Param('username') username: string): Promise<User | null> {
+      return this.userService.findByUsername(username);
    }
 
    // Update
