@@ -6,6 +6,7 @@ import { ConfigModule } from '@nestjs/config';
 import { AuthModule } from './auth/auth.module';
 import { UserModule } from './user/user.module';
 import { DiseaseModule } from './disease/disease.module';
+import { HealthTrackingModule } from './health-tracking/health-tracking.module';
 
 @Module({
    imports: [
@@ -13,7 +14,8 @@ import { DiseaseModule } from './disease/disease.module';
       MongooseModule.forRoot(process.env.DATABASE),
       AuthModule,
       UserModule,
-      DiseaseModule
+      DiseaseModule,
+      HealthTrackingModule
    ],
    controllers: [AppController],
    providers: [AppService],
