@@ -153,30 +153,42 @@ class _DataScreenState extends State<DataScreen> {
                     onPressed: () {
                       Navigator.pushNamed(
                         context,
+                        '/entry',
+                      );
+                    },
+                    child: Text('đặt mục tiêu'),
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: ElevatedButton(
+                    onPressed: () {
+                      Navigator.pushNamed(
+                        context,
                         '/disease',
                       );
                     },
                     child: Text('Xem danh sách bệnh'),
                   ),
                 ),
-                if (_accessToken != null && _refreshToken != null)
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'Access Token: $_accessToken',
-                          style: TextStyle(fontWeight: FontWeight.bold),
-                        ),
-                        SizedBox(height: 8.0),
-                        Text(
-                          'Refresh Token: $_refreshToken',
-                          style: TextStyle(fontWeight: FontWeight.bold),
-                        ),
-                      ],
-                    ),
-                  ),
+                // if (_accessToken != null && _refreshToken != null)
+                //   Padding(
+                //     padding: const EdgeInsets.all(8.0),
+                //     child: Column(
+                //       crossAxisAlignment: CrossAxisAlignment.start,
+                //       children: [
+                //         Text(
+                //           'Access Token: $_accessToken',
+                //           style: TextStyle(fontWeight: FontWeight.bold),
+                //         ),
+                //         SizedBox(height: 8.0),
+                //         Text(
+                //           'Refresh Token: $_refreshToken',
+                //           style: TextStyle(fontWeight: FontWeight.bold),
+                //         ),
+                //       ],
+                //     ),
+                //   ),
               ],
             ),
     );

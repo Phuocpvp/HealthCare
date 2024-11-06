@@ -1,5 +1,5 @@
 import 'dart:convert';
-import 'package:client/models/Login-DTO.dart';
+import 'package:client/models/user.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
 

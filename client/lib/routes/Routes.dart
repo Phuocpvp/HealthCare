@@ -6,6 +6,9 @@ import 'package:client/screens/Login.dart';
 import 'package:client/screens/TestData.dart';
 import 'package:client/screens/Profile.dart';
 import 'package:client/screens/Update_Info.dart';
+import 'package:client/screens/healthTracking/BodyIndex.dart';
+import 'package:client/screens/healthTracking/HealthGoals.dart';
+import 'package:client/screens/healthTracking/Sleep.dart';
 import 'package:client/screens/signup_screen.dart';
 import 'package:flutter/material.dart';
 // import '../screens/Login.dart';
@@ -18,6 +21,9 @@ class AppRoutes {
   static const String update = '/update';
   static const String disease = '/disease';
   static const String entry = '/entry';
+  static const String sleep = '/sleep';
+  static const String healthGoals = '/healthGoals';
+  static const String bodyIndex = '/bodyIndex';
 
   static Map<String, WidgetBuilder> get routes {
     return {
@@ -27,7 +33,10 @@ class AppRoutes {
       profile: (context) => UserInfo(),
       update: (context) => UpdateInfo(),
       disease: (context) => Disease(),
-      entry: (context) => EntryPoint()
+      entry: (context) => EntryPoint(),
+      sleep: (context) => UpdateSleepDataScreen(),
+      healthGoals: (context) => HealthGoals(),
+      bodyIndex: (context) => UpdateBodyIndexScreen()
     };
   }
 }

@@ -1,7 +1,12 @@
+import 'dart:io';
+
 import 'package:animations/animations.dart';
 import 'package:client/constants.dart';
+import 'package:client/screens/Disease_screen.dart';
 import 'package:client/screens/Login.dart';
-import 'package:client/screens/Register.dart';
+import 'package:client/screens/healthTracking/BodyIndex.dart';
+import 'package:client/screens/healthTracking/HealthGoals.dart';
+import 'package:client/screens/healthTracking/Sleep.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 // import 'package:shop/route/screen_export.dart';
@@ -15,8 +20,10 @@ class EntryPoint extends StatefulWidget {
 
 class _EntryPointState extends State<EntryPoint> {
   final List _pages = [
-    RegisterPage(),
-    Login(),
+    HealthGoals(),
+    UpdateSleepDataScreen(),
+    UpdateBodyIndexScreen(),
+    Disease()
     // HomeScreen(),
     // DiscoverScreen(),
     // BookmarkScreen(),
@@ -50,7 +57,7 @@ class _EntryPointState extends State<EntryPoint> {
         leadingWidth: 0,
         centerTitle: false,
         title: SvgPicture.asset(
-          "assets/logo/Shoplon.svg",
+          "assets/logo/Language.svg",
           colorFilter: ColorFilter.mode(
               Theme.of(context).iconTheme.color!, BlendMode.srcIn),
           height: 20,
@@ -119,26 +126,28 @@ class _EntryPointState extends State<EntryPoint> {
           unselectedItemColor: Colors.transparent,
           items: [
             BottomNavigationBarItem(
-              icon: svgIcon("assets/icons/Shop.svg"),
-              activeIcon: svgIcon("assets/icons/Shop.svg", color: primaryColor),
-              label: "Shop",
+              icon: svgIcon("assets/icons/Emoji.svg"),
+              activeIcon:
+                  svgIcon("assets/icons/Emoji.svg", color: primaryColor),
+              label: "Goat",
             ),
             BottomNavigationBarItem(
-              icon: svgIcon("assets/icons/Category.svg"),
+              icon: svgIcon("assets/icons/Star_filled.svg"),
               activeIcon:
-                  svgIcon("assets/icons/Category.svg", color: primaryColor),
-              label: "Discover",
+                  svgIcon("assets/icons/Star_filled.svg", color: primaryColor),
+              label: "Sleep",
             ),
             BottomNavigationBarItem(
               icon: svgIcon("assets/icons/Bookmark.svg"),
               activeIcon:
                   svgIcon("assets/icons/Bookmark.svg", color: primaryColor),
-              label: "Bookmark",
+              label: "Body",
             ),
             BottomNavigationBarItem(
-              icon: svgIcon("assets/icons/Bag.svg"),
-              activeIcon: svgIcon("assets/icons/Bag.svg", color: primaryColor),
-              label: "Cart",
+              icon: svgIcon("assets/icons/Minus.svg"),
+              activeIcon:
+                  svgIcon("assets/icons/Minus.svg", color: primaryColor),
+              label: "Disease",
             ),
             BottomNavigationBarItem(
               icon: svgIcon("assets/icons/Profile.svg"),

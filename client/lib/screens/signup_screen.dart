@@ -1,5 +1,7 @@
 // import 'package:client/models/Login-DTO.dart';
+import 'package:client/models/user.dart';
 import 'package:client/screens/components/sign_up_form.dart';
+import 'package:client/services/login_API.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 // import 'package:client/services/login_API.dart';
@@ -16,48 +18,42 @@ class SignUpScreen extends StatefulWidget {
 
 class _SignUpScreenState extends State<SignUpScreen> {
   final _formKey = GlobalKey<FormState>();
-  // final TextEditingController _usernameController = TextEditingController();
-  // final TextEditingController _emailController = TextEditingController();
-  // final TextEditingController _passwordController = TextEditingController();
-  // // final TextEditingController _confirmPasswordController =
-  // //     TextEditingController();
+  final TextEditingController _usernameController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _confirmPasswordController =
+      TextEditingController();
 
-  // Future<void> _register() async {
-  //   if (_formKey.currentState!.validate()) {
-  //     _formKey.currentState!.save();
+  Future<void> _register() async {
+    String username = _usernameController.text;
+    String email = _emailController.text;
+    String password = _passwordController.text;
+    String confirmPassword = _confirmPasswordController.text;
 
-  //     // Lấy thông tin từ controllers
-  //     String username = _usernameController.text;
-  //     String email = _emailController.text;
-  //     String password = _passwordController.text;
-  //   final ApiService _apiService = ApiService();
+    final ApiService _apiService = ApiService();
 
-  //   // Kiểm tra các giá trị nhập vào
-  //   // if (password != confirmPassword) {
-  //   //   ScaffoldMessenger.of(context).showSnackBar(
-  //   //     const SnackBar(
-  //   //         content: Text('Password và Confirm Password không trùng khớp')),
-  //   //   );
-  //   //   return;
-  //   // }
+    // if (password != confirmPassword) {
+    //   ScaffoldMessenger.of(context).showSnackBar(
+    //     const SnackBar(
+    //         content: Text('Password và Confirm Password không trùng khớp')),
+    //   );
+    //   return;
+    // }
 
-  //   // Tiến hành xử lý đăng ký (ví dụ: gửi dữ liệu lên server)
-  //   // Tạo đối tượng User từ dữ liệu nhập
-  //   User user = User(username: username /*, email: email*/, password: password);
+    User user = User(username: username, email: email, password: password);
 
-  //   // Gọi API để đăng ký
-  //   bool success = await _apiService.registerUser(user);
+    bool success = await _apiService.registerUser(user);
 
-  //   // Hiển thị kết quả
-  //   if (success) {
-  //     ScaffoldMessenger.of(context).showSnackBar(
-  //       SnackBar(content: Text('Đăng ký thành công!')),
-  //     );
-  //   } else {
-  //     ScaffoldMessenger.of(context).showSnackBar(
-  //       SnackBar(content: Text('Đăng ký thất bại!')),
-  //     );
-  //   }
+    if (success) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Đăng ký thành công!')),
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Đăng ký thất bại!')),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -85,7 +81,12 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     "Please enter your valid data in order to create an account.",
                   ),
                   const SizedBox(height: defaultPadding),
-                  SignUpForm(formKey: _formKey),
+                  SignUpForm(
+                    formKey: _formKey,
+                    usernameController: _usernameController,
+                    emailController: _emailController,
+                    passwordController: _passwordController,
+                  ),
                   const SizedBox(height: defaultPadding),
                   Row(
                     children: [
@@ -122,6 +123,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   ElevatedButton(
                     onPressed: () {
                       if (_formKey.currentState!.validate()) {
+                        _formKey.currentState!.save();
+                        _register();
                         Navigator.pushNamedAndRemoveUntil(
                             context, '/', ModalRoute.withName('/register'));
                       }
