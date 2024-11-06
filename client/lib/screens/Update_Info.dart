@@ -1,4 +1,4 @@
-import 'package:client/services/token_service.dart';
+// import 'package:client/services/token_service.dart';
 import 'package:flutter/material.dart';
 import 'package:client/services/api_service.dart';
 import 'package:client/services/flutter_secure_storage.dart';
@@ -16,7 +16,6 @@ class _UpdateProfile extends State<UpdateInfo> {
   final SecureStorageService _secureStorageService = SecureStorageService();
   final ApiService _apiService =
       ApiService('${dotenv.env['LOCALHOST']}'); // URL API của bạn
-  final tokenService = TokenService();
 
   String? _username;
   String? _email;
@@ -35,12 +34,12 @@ class _UpdateProfile extends State<UpdateInfo> {
 
   Future<void> _fetchUserToken() async {
     // _token = await _secureStorageService.getToken();
-    _token = await tokenService.getValidAccessToken();
+    _token = await _secureStorageService.getValidAccessToken();
   }
 
   Future<void> _fetchUserInfo() async {
     // _token = await _secureStorageService.getToken();
-    _token = await tokenService.getValidAccessToken();
+    _token = await _secureStorageService.getValidAccessToken();
 
     if (_token == null) return;
 

@@ -21,14 +21,14 @@ class _SignUpScreenState extends State<SignUpScreen> {
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  final TextEditingController _confirmPasswordController =
-      TextEditingController();
+  // final TextEditingController _confirmPasswordController =
+  //     TextEditingController();
 
   Future<void> _register() async {
     String username = _usernameController.text;
     String email = _emailController.text;
     String password = _passwordController.text;
-    String confirmPassword = _confirmPasswordController.text;
+    // String confirmPassword = _confirmPasswordController.text;
 
     final ApiService _apiService = ApiService();
 

@@ -1,7 +1,8 @@
-import 'package:client/services/token_service.dart';
+// import 'package:client/services/token_service.dart';
+import 'package:client/services/flutter_secure_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+// import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
 import 'package:jwt_decode/jwt_decode.dart';
 import 'dart:convert';
@@ -16,9 +17,9 @@ class AppTaskbar extends StatefulWidget {
 }
 
 class _TaskbarState extends State<AppTaskbar> {
-  final storage = FlutterSecureStorage();
+  // final storage = FlutterSecureStorage();
   final ApiService _apiService = ApiService('${dotenv.env['LOCALHOST']}');
-  final tokenService = TokenService();
+  final SecureStorageService _secureStorageService = SecureStorageService();
 
   String username = '';
   String email = '';
@@ -45,7 +46,7 @@ class _TaskbarState extends State<AppTaskbar> {
   Future<void> _fetchUserInfo() async {
     // Lấy token từ storage
     // String? token = await storage.read(key: 'authToken');
-    String? token = await tokenService.getValidAccessToken();
+    String? token = await _secureStorageService.getValidAccessToken();
     if (token != null) {
       final response = await http.get(
         Uri.parse(
