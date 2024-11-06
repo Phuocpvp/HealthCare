@@ -1,4 +1,3 @@
-import 'package:client/services/token_service.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -12,7 +11,6 @@ class UserInfo extends StatefulWidget {
 
 class _UserProfile extends State<UserInfo> {
   final SecureStorageService _secureStorageService = SecureStorageService();
-  final tokenService = TokenService();
   Map<String, dynamic>? userData;
   bool _isLoading = true;
 
@@ -24,7 +22,7 @@ class _UserProfile extends State<UserInfo> {
 
   Future<void> _fetchUserInfo() async {
     // String? token = await _secureStorageService.getToken();
-    String? token = await tokenService.getValidAccessToken();
+    String? token = await _secureStorageService.getValidAccessToken();
     if (token == null) {
       throw Exception('No token found');
     }

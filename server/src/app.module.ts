@@ -5,13 +5,15 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { ConfigModule } from '@nestjs/config';
 import { AuthModule } from './auth/auth.module';
 import { UserModule } from './user/user.module';
+import { DiseaseModule } from './disease/disease.module';
 
 @Module({
    imports: [
       ConfigModule.forRoot(),
       MongooseModule.forRoot(process.env.DATABASE),
       AuthModule,
-      UserModule
+      UserModule,
+      DiseaseModule
    ],
    controllers: [AppController],
    providers: [AppService],

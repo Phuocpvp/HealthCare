@@ -1,4 +1,4 @@
-import 'package:client/services/token_service.dart';
+import 'package:client/services/flutter_secure_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
@@ -12,7 +12,7 @@ class Disease extends StatefulWidget {
 class _DiseaseState extends State<Disease> {
   List<dynamic> diseases = [];
   List<bool> isExpandedList = []; // Danh sách trạng thái mở rộng cho từng khung
-  final tokenService = TokenService();
+  final SecureStorageService _secureStorageService = SecureStorageService();
 
   @override
   void initState() {
@@ -21,7 +21,8 @@ class _DiseaseState extends State<Disease> {
   }
 
   Future<void> fetchDiseases() async {
-    String? token = await tokenService.getValidAccessToken();
+    String? token = await _secureStorageService.getValidAccessToken();
+    print(token.toString());
     if (token == null) {
       throw Exception('No token found');
     }

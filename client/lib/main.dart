@@ -1,3 +1,4 @@
+import 'package:client/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'routes/Routes.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -13,6 +14,9 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Flutter Navigation Demo',
+      theme: AppTheme.lightTheme(context),
+      // Dark theme is inclided in the Full template
+      themeMode: ThemeMode.light,
       initialRoute: AppRoutes.login,
       routes: AppRoutes.routes,
     );

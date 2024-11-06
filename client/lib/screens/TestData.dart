@@ -35,8 +35,7 @@ class _DataScreenState extends State<DataScreen> {
     // Lấy access token và refresh token từ TokenService
     String? accessToken = await _secureStorageService.getAccessToken();
     String? refreshToken = await _secureStorageService.getRefreshToken();
-    print("accessToken: " + accessToken.toString());
-    print("refreshToken: " + refreshToken.toString());
+
     setState(() {
       _accessToken = accessToken;
       _refreshToken = refreshToken;
