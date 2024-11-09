@@ -159,18 +159,18 @@ class _DataScreenState extends State<DataScreen> {
                     child: Text('đặt mục tiêu'),
                   ),
                 ),
-                Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: ElevatedButton(
-                    onPressed: () {
-                      Navigator.pushNamed(
-                        context,
-                        '/disease',
-                      );
-                    },
-                    child: Text('Xem danh sách bệnh'),
-                  ),
-                ),
+                // Padding(
+                //   padding: const EdgeInsets.all(16.0),
+                //   child: ElevatedButton(
+                //     onPressed: () {
+                //       Navigator.pushNamed(
+                //         context,
+                //         '/disease',
+                //       );
+                //     },
+                //     child: Text('Xem danh sách bệnh'),
+                //   ),
+                // ),
                 // if (_accessToken != null && _refreshToken != null)
                 //   Padding(
                 //     padding: const EdgeInsets.all(8.0),

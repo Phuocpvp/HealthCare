@@ -7,6 +7,8 @@ import { AuthModule } from './auth/auth.module';
 import { UserModule } from './user/user.module';
 import { DiseaseModule } from './disease/disease.module';
 import { HealthTrackingModule } from './health-tracking/health-tracking.module';
+import { AnswerSchema } from './schema/answer.schema';
+import { AnswerModule } from './answer/answer.module';
 
 @Module({
    imports: [
@@ -15,7 +17,8 @@ import { HealthTrackingModule } from './health-tracking/health-tracking.module';
       AuthModule,
       UserModule,
       DiseaseModule,
-      HealthTrackingModule
+      HealthTrackingModule,
+      AnswerModule
    ],
    controllers: [AppController],
    providers: [AppService],

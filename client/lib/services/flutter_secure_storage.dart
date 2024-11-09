@@ -13,9 +13,9 @@ class SecureStorageService {
   }
 
   // // Lấy token từ Secure Storage
-  // Future<String?> getToken() async {
-  //   return await _secureStorage.read(key: 'access_token');
-  // }
+  Future<String?> getToken() async {
+    return await _secureStorage.read(key: 'access_token');
+  }
 
   Future<void> saveRefreshToken(String refreshToken) async {
     await _secureStorage.write(key: 'refresh_token', value: refreshToken);
