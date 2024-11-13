@@ -4,6 +4,7 @@ import 'package:animations/animations.dart';
 import 'package:client/constants.dart';
 import 'package:client/screens/Disease_screen.dart';
 import 'package:client/screens/Login.dart';
+import 'package:client/screens/Profile.dart';
 import 'package:client/screens/healthTracking/BodyIndex.dart';
 import 'package:client/screens/healthTracking/HealthGoals.dart';
 import 'package:client/screens/healthTracking/Sleep.dart';
@@ -23,13 +24,8 @@ class _EntryPointState extends State<EntryPoint> {
     HealthGoals(),
     UpdateSleepDataScreen(),
     UpdateBodyIndexScreen(),
-    Disease()
-    // HomeScreen(),
-    // DiscoverScreen(),
-    // BookmarkScreen(),
-    // EmptyCartScreen(), // if Cart is empty
-    // CartScreen(),
-    // ProfileScreen(),
+    Disease(),
+    UserInfo()
   ];
   int _currentIndex = 0;
 
