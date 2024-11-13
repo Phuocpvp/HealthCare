@@ -1,10 +1,9 @@
-// import 'package:client/services/token_service.dart';
 import 'package:flutter/material.dart';
-import 'package:client/services/api_service.dart';
-import 'package:client/services/flutter_secure_storage.dart';
+import 'package:image_picker/image_picker.dart'; // Thêm package image_picker
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'dart:convert'; // Thêm import này để sử dụng json.decode
 import 'package:http/http.dart' as http;
+import 'dart:convert';
+import 'dart:io';
 
 class UpdateInfo extends StatefulWidget {
   @override
@@ -13,10 +12,6 @@ class UpdateInfo extends StatefulWidget {
 
 class _UpdateProfile extends State<UpdateInfo> {
   final _formKey = GlobalKey<FormState>();
-  final SecureStorageService _secureStorageService = SecureStorageService();
-  final ApiService _apiService =
-      ApiService('${dotenv.env['LOCALHOST']}'); // URL API của bạn
-
   String? _username;
   String? _email;
   String? _birthOfDate;
@@ -28,43 +23,58 @@ class _UpdateProfile extends State<UpdateInfo> {
   @override
   void initState() {
     super.initState();
-    _fetchUserToken();
     _fetchUserInfo(); // Gọi phương thức này để lấy thông tin người dùng
   }
 
-  Future<void> _fetchUserToken() async {
-    // _token = await _secureStorageService.getToken();
-    _token = await _secureStorageService.getValidAccessToken();
-  }
-
   Future<void> _fetchUserInfo() async {
-    // _token = await _secureStorageService.getToken();
-    _token = await _secureStorageService.getValidAccessToken();
+    // Giả sử bạn đã lấy được token trước đó
+    _token = await _getToken();
 
-    if (_token == null) return;
+    // Lấy thông tin người dùng từ server
+    if (_token != null) {
+      final response = await http.get(
+        Uri.parse('${dotenv.env['LOCALHOST']}/user/profile'),
+        headers: {
+          'Authorization': 'Bearer $_token',
+        },
+      );
 
-    final response = await http.get(
-      Uri.parse('${dotenv.env['LOCALHOST']}/user/profile'),
-      headers: {
-        'Authorization': 'Bearer $_token',
-      },
-    );
-
-    if (response.statusCode == 200) {
-      final userInfo = json.decode(response.body);
-      setState(() {
-        _username = userInfo['username'];
-        _email = userInfo['email'];
-        _birthOfDate = userInfo['birthOfDate'];
-        _gender = userInfo['gender'];
-        _avatar = userInfo['avatar'];
-        _isLoading = false;
-      });
-    } else {
-      print("Failed to load user info");
+      if (response.statusCode == 200) {
+        final userInfo = json.decode(response.body);
+        setState(() {
+          _username = userInfo['username'];
+          _email = userInfo['email'];
+          _birthOfDate = userInfo['birthOfDate'];
+          _gender = userInfo['gender'];
+          _avatar = userInfo['avatar'];
+          _isLoading = false;
+        });
+      } else {
+        print("Failed to load user info");
+      }
     }
   }
 
+  // Giả sử đây là phương thức lấy token đã lưu trong secure storage
+  Future<String?> _getToken() async {
+    // Đây là giả định, bạn cần thực hiện lấy token từ secure storage hoặc nơi lưu trữ.
+    return "your_access_token_here";
+  }
+
+  // Phương thức để chọn hình ảnh từ thư viện hoặc camera
+  Future<void> _pickImage() async {
+    final ImagePicker picker = ImagePicker();
+    final XFile? image = await picker.pickImage(
+        source: ImageSource
+            .gallery); // Hoặc ImageSource.camera để chụp ảnh từ camera
+    if (image != null) {
+      setState(() {
+        _avatar = image.path; // Lưu đường dẫn file ảnh
+      });
+    }
+  }
+
+  // Cập nhật thông tin người dùng và hình ảnh
   Future<void> _updateUser() async {
     if (_formKey.currentState!.validate()) {
       _formKey.currentState!.save();
@@ -74,29 +84,34 @@ class _UpdateProfile extends State<UpdateInfo> {
         return;
       }
 
-      final updatedUserData = {
-        'username': _username,
-        'email': _email,
-        'birthOfDate': _birthOfDate,
-        'gender': _gender,
-        'avatar': _avatar,
-      };
-
       try {
-        final response = await http.put(
+        var request = http.MultipartRequest(
+          'PUT',
           Uri.parse('${dotenv.env['LOCALHOST']}/user/update'),
-          headers: {
-            'Authorization': 'Bearer $_token',
-            'Content-Type': 'application/json',
-          },
-          body: json.encode(updatedUserData),
         );
+
+        request.headers['Authorization'] = 'Bearer $_token';
+
+        // Thêm dữ liệu vào request
+        request.fields['username'] = _username ?? '';
+        request.fields['email'] = _email ?? '';
+        request.fields['birthOfDate'] = _birthOfDate ?? '';
+        request.fields['gender'] = _gender ?? '';
+
+        // Nếu có ảnh, thêm ảnh vào multipart request
+        if (_avatar != null) {
+          request.files
+              .add(await http.MultipartFile.fromPath('avatar', _avatar!));
+        }
+
+        // Gửi request
+        var response = await request.send();
 
         if (response.statusCode == 200) {
           Navigator.pushNamed(
               context, '/profile'); // Chuyển hướng đến trang hồ sơ
         } else {
-          print("Failed to update user: ${response.body}");
+          print("Failed to update user: ${response.reasonPhrase}");
         }
       } catch (error) {
         print("Failed to update user: $error");
@@ -172,6 +187,11 @@ class _UpdateProfile extends State<UpdateInfo> {
                 decoration: InputDecoration(labelText: 'Link ảnh đại diện'),
                 initialValue: _avatar,
                 onSaved: (value) => _avatar = value,
+              ),
+              // Thêm nút để chọn hình ảnh
+              ElevatedButton(
+                onPressed: _pickImage,
+                child: Text('Chọn ảnh đại diện'),
               ),
               SizedBox(height: 20),
               ElevatedButton(

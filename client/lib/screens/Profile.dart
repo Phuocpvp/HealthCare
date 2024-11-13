@@ -1,7 +1,10 @@
+import 'dart:typed_data';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:client/services/flutter_secure_storage.dart';
 
 class UserInfo extends StatefulWidget {
@@ -11,8 +14,18 @@ class UserInfo extends StatefulWidget {
 
 class _UserProfile extends State<UserInfo> {
   final SecureStorageService _secureStorageService = SecureStorageService();
+  final _formKey = GlobalKey<FormState>();
+
   Map<String, dynamic>? userData;
   bool _isLoading = true;
+  Uint8List? _imageBytes; // Dùng để hiển thị ảnh đã chọn trên web và mobile
+  String? _avatarUrl; // Link ảnh trên server
+
+  // Controllers cho các trường thông tin người dùng
+  late TextEditingController _usernameController;
+  late TextEditingController _emailController;
+  late TextEditingController _genderController;
+  late TextEditingController _birthOfDateController;
 
   @override
   void initState() {
@@ -21,89 +34,207 @@ class _UserProfile extends State<UserInfo> {
   }
 
   Future<void> _fetchUserInfo() async {
-    // String? token = await _secureStorageService.getToken();
     String? token = await _secureStorageService.getValidAccessToken();
-    if (token == null) {
-      throw Exception('No token found');
-    }
+    if (token == null) throw Exception('No token found');
 
     final response = await http.get(
       Uri.parse('${dotenv.env['LOCALHOST']}/user/profile'),
-      headers: {
-        'Authorization': 'Bearer $token',
-      },
+      headers: {'Authorization': 'Bearer $token'},
     );
 
     if (response.statusCode == 200) {
       setState(() {
         userData = json.decode(response.body);
         _isLoading = false;
+
+        // Khởi tạo controllers với dữ liệu người dùng
+        _usernameController =
+            TextEditingController(text: userData!['username']);
+        _emailController = TextEditingController(text: userData!['email']);
+        _genderController = TextEditingController(text: userData!['gender']);
+        _birthOfDateController = TextEditingController(
+          text: userData!['birthOfDate'] ?? 'Not provided',
+        );
+
+        // Khởi tạo link ảnh đại diện
+        _avatarUrl = userData!['avatar'];
       });
     } else {
       throw Exception('Failed to load user info');
     }
   }
 
+  // Chọn và tải ảnh lên server, sau đó cập nhật link ảnh
+  Future<void> _pickAndUploadImage() async {
+    final picker = ImagePicker();
+    final pickedFile = await picker.pickImage(source: ImageSource.gallery);
+
+    if (pickedFile != null) {
+      try {
+        // Đọc ảnh để hiển thị ngay sau khi chọn
+        _imageBytes = await pickedFile.readAsBytes();
+        setState(() {}); // Cập nhật UI để hiển thị ảnh
+
+        String? token = await _secureStorageService.getValidAccessToken();
+        if (token == null) throw Exception('No token found');
+
+        var request = http.MultipartRequest(
+          'PUT',
+          Uri.parse('${dotenv.env['LOCALHOST']}/user/update/avatar'),
+        );
+        request.headers['Authorization'] = 'Bearer $token';
+
+        if (kIsWeb) {
+          // Xử lý ảnh cho nền tảng web
+          request.files.add(http.MultipartFile.fromBytes(
+            'avatar',
+            _imageBytes!,
+            filename: pickedFile.name,
+          ));
+        } else {
+          // Xử lý ảnh cho nền tảng mobile
+          request.files.add(await http.MultipartFile.fromPath(
+            'avatar',
+            pickedFile.path,
+          ));
+        }
+
+        var response = await request.send();
+        if (response.statusCode == 200) {
+          final responseData = await response.stream.bytesToString();
+          final responseBody = json.decode(responseData);
+
+          setState(() {
+            _avatarUrl =
+                responseBody['avatarUrl']; // Cập nhật link ảnh trên server
+          });
+
+          ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text('Cập nhật ảnh thành công!')));
+        } else {
+          throw Exception('Failed to upload avatar');
+        }
+      } catch (e) {
+        print("Error uploading image: $e");
+      }
+    } else {
+      print("No image selected.");
+    }
+  }
+
+  // Cập nhật thông tin người dùng
+  Future<void> _updateUserInfo() async {
+    String? token = await _secureStorageService.getValidAccessToken();
+    if (token == null) throw Exception('No token found');
+
+    final response = await http.put(
+      Uri.parse('${dotenv.env['LOCALHOST']}/user/update'),
+      headers: {
+        'Authorization': 'Bearer $token',
+        'Content-Type': 'application/json',
+      },
+      body: json.encode({
+        'username': _usernameController.text,
+        'email': _emailController.text,
+        'gender': _genderController.text,
+        'birthOfDate': _birthOfDateController.text,
+        'avatar': _avatarUrl, // Cập nhật link ảnh mới
+      }),
+    );
+
+    if (response.statusCode == 200) {
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text('Thông tin đã được cập nhật!')));
+    } else {
+      throw Exception('Failed to update user info');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.grey[100],
       appBar: AppBar(
-        title: Text('User Information'),
+        backgroundColor: Colors.teal,
+        title: Text('User Information', style: TextStyle(color: Colors.white)),
+        centerTitle: true,
       ),
       body: _isLoading
           ? Center(child: CircularProgressIndicator())
           : userData == null
               ? Center(child: Text('No user data available'))
-              : Padding(
+              : SingleChildScrollView(
                   padding: const EdgeInsets.all(16.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      _buildUserInfoRow('Username', userData!['username']),
-                      _buildUserInfoRow('Email', userData!['email']),
-                      _buildUserInfoRow('Gender', userData!['gender']),
-                      _buildUserInfoRow('Birth of Date',
-                          userData!['birthOfDate'] ?? 'Not provided'),
-                      _buildUserAvatar(userData!['avatar']),
-                      SizedBox(height: 20),
-                      // Nút Cập Nhật Thông Tin
-                      Center(
-                        child: ElevatedButton(
-                          onPressed: () {
-                            Navigator.pushNamed(context, '/update');
-                          },
-                          child: Text('Cập Nhật Thông Tin'),
+                  child: Form(
+                    key: _formKey,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        _buildUserAvatar(_avatarUrl),
+                        SizedBox(height: 20),
+                        _buildEditableField('Username', _usernameController),
+                        _buildEditableField('Email', _emailController),
+                        _buildEditableField('Gender', _genderController),
+                        _buildEditableField(
+                            'Birth of Date', _birthOfDateController),
+                        SizedBox(height: 20),
+                        Center(
+                          child: ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.teal,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(20),
+                              ),
+                              padding: EdgeInsets.symmetric(
+                                  horizontal: 32, vertical: 12),
+                            ),
+                            onPressed: _updateUserInfo,
+                            child: Text('Lưu Thông Tin',
+                                style: TextStyle(fontSize: 16)),
+                          ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
     );
   }
 
-  Widget _buildUserInfoRow(String label, String value) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4.0),
-      child: Row(
-        children: [
-          Text(
-            '$label: ',
-            style: TextStyle(fontWeight: FontWeight.bold),
-          ),
-          Text(value),
-        ],
+  // Widget để hiển thị và chọn ảnh đại diện
+  Widget _buildUserAvatar(String? avatarUrl) {
+    return GestureDetector(
+      onTap: _pickAndUploadImage,
+      child: Center(
+        child: CircleAvatar(
+          radius: 60,
+          backgroundImage: _imageBytes != null
+              ? MemoryImage(_imageBytes!)
+              : (avatarUrl != null
+                  ? NetworkImage(avatarUrl)
+                  : AssetImage('assets/default_avatar.png') as ImageProvider),
+          backgroundColor: Colors.grey[200],
+        ),
       ),
     );
   }
 
-  Widget _buildUserAvatar(String avatarUrl) {
+  Widget _buildEditableField(String label, TextEditingController controller) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 16.0),
-      child: Center(
-        child: CircleAvatar(
-          radius: 50,
-          backgroundImage: NetworkImage(avatarUrl),
+      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      child: TextFormField(
+        controller: controller,
+        decoration: InputDecoration(
+          labelText: label,
+          border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+          filled: true,
+          fillColor: Colors.white,
         ),
+        validator: (value) {
+          if (value == null || value.isEmpty) {
+            return '$label không được để trống';
+          }
+          return null;
+        },
       ),
     );
   }
