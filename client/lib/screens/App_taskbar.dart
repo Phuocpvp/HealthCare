@@ -81,11 +81,12 @@ class _TaskbarState extends State<AppTaskbar> {
         children: <Widget>[
           UserAccountsDrawerHeader(
             accountName: Text(userInfo['username'] ?? 'Unknown User'),
-            accountEmail: Text(userInfo['email'] ?? 'No Email'),
+            accountEmail: Text(userInfo['email'] ?? ''),
             currentAccountPicture: CircleAvatar(
-              backgroundImage: avatarUrl.startsWith('http')
+              backgroundImage: avatarUrl.isNotEmpty &&
+                      avatarUrl.startsWith('http')
                   ? NetworkImage(avatarUrl)
-                  : AssetImage(avatarUrl) as ImageProvider,
+                  : AssetImage('assets/default_avatar.png') as ImageProvider,
             ),
           ),
 
