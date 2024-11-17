@@ -17,7 +17,6 @@ class _LoginState extends State<Login> {
   // final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   final ApiService _apiService = ApiService('${dotenv.env['LOCALHOST']}');
-  final storage = FlutterSecureStorage();
 
   Future<void> login() async {
     // Lấy dữ liệu từ TextField

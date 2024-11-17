@@ -7,9 +7,13 @@ class LogInForm extends StatelessWidget {
   const LogInForm({
     super.key,
     required this.formKey,
+    required this.usernameController,
+    required this.passwordController,
   });
 
   final GlobalKey<FormState> formKey;
+  final TextEditingController usernameController;
+  final TextEditingController passwordController;
 
   @override
   Widget build(BuildContext context) {
@@ -18,19 +22,19 @@ class LogInForm extends StatelessWidget {
       child: Column(
         children: [
           TextFormField(
-            onSaved: (emal) {
-              // Email
+            onSaved: (uname) {
+              usernameController.text = uname ?? '';
             },
-            validator: emaildValidator.call,
+            // validator: emaildValidator.call,
             textInputAction: TextInputAction.next,
             keyboardType: TextInputType.emailAddress,
             decoration: InputDecoration(
-              hintText: "Email address",
+              hintText: "User Name",
               prefixIcon: Padding(
                 padding:
                     const EdgeInsets.symmetric(vertical: defaultPadding * 0.75),
                 child: SvgPicture.asset(
-                  "assets/icons/Message.svg",
+                  "assets/icons/Profile.svg",
                   height: 24,
                   width: 24,
                   colorFilter: ColorFilter.mode(
@@ -46,10 +50,11 @@ class LogInForm extends StatelessWidget {
           ),
           const SizedBox(height: defaultPadding),
           TextFormField(
+            controller: passwordController,
             onSaved: (pass) {
-              // Password
+              passwordController.text = pass ?? '';
             },
-            validator: passwordValidator.call,
+            // validator: passwordValidator.call,
             obscureText: true,
             decoration: InputDecoration(
               hintText: "Password",

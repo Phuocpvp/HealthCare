@@ -9,6 +9,7 @@ import 'package:client/screens/Update_Info.dart';
 import 'package:client/screens/healthTracking/BodyIndex.dart';
 import 'package:client/screens/healthTracking/HealthGoals.dart';
 import 'package:client/screens/healthTracking/Sleep.dart';
+import 'package:client/screens/login_screen.dart';
 import 'package:client/screens/signup_screen.dart';
 import 'package:flutter/material.dart';
 // import '../screens/Login.dart';
@@ -27,7 +28,7 @@ class AppRoutes {
 
   static Map<String, WidgetBuilder> get routes {
     return {
-      login: (context) => Login(),
+      login: (context) => LoginScreen(),
       register: (context) => SignUpScreen(),
       testdata: (context) => DataScreen(),
       profile: (context) => UserInfo(),

@@ -24,9 +24,9 @@ class SignUpForm extends StatelessWidget {
       child: Column(
         children: [
           TextFormField(
-            controller: usernameController,
+            // controller: usernameController,
             onSaved: (uname) {
-              // Username
+              usernameController.text = uname ?? '';
             },
             // validator: emaildValidator.call,
             textInputAction: TextInputAction.next,
@@ -54,9 +54,9 @@ class SignUpForm extends StatelessWidget {
           ),
           const SizedBox(height: defaultPadding),
           TextFormField(
-            controller: emailController,
+            // controller: emailController,
             onSaved: (emal) {
-              // Email
+              emailController.text = emal ?? '';
             },
             validator: emaildValidator.call,
             textInputAction: TextInputAction.next,

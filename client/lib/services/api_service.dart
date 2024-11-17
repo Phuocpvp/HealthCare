@@ -24,8 +24,8 @@ class ApiService {
         final data = jsonDecode(response.body);
         String accessToken = data['access_token'];
         String refreshToken = data['refresh_token'];
-        // print(accessToken.toString());
-        // print(refreshToken.toString());
+        // print("check khi login: " + accessToken.toString());
+        // print("check khi login: " + refreshToken.toString());
         return {
           'accessToken': accessToken,
           'refreshToken': refreshToken,
