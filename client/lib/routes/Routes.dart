@@ -1,8 +1,6 @@
 // import 'package:client/screens/Login-Screen.dart';
 import 'package:client/entry_point.dart';
 import 'package:client/screens/healthTracking/Disease_screen.dart';
-import 'package:client/screens/Login.dart';
-// import 'package:client/screens/register_view.dart';
 import 'package:client/screens/TestData.dart';
 import 'package:client/screens/Profile.dart';
 import 'package:client/screens/Update_Info.dart';
