@@ -30,9 +30,14 @@ class _UserProfile extends State<UserInfo> {
   @override
   void initState() {
     super.initState();
+    _usernameController = TextEditingController();
+    _emailController = TextEditingController();
+    _genderController = TextEditingController();
+    _birthOfDateController = TextEditingController();
     _fetchUserInfo();
   }
 
+  // Lấy thông tin người dùng từ server
   Future<void> _fetchUserInfo() async {
     String? token = await _secureStorageService.getValidAccessToken();
     if (token == null) throw Exception('No token found');
@@ -48,13 +53,11 @@ class _UserProfile extends State<UserInfo> {
         _isLoading = false;
 
         // Khởi tạo controllers với dữ liệu người dùng
-        _usernameController =
-            TextEditingController(text: userData!['username']);
-        _emailController = TextEditingController(text: userData!['email']);
-        _genderController = TextEditingController(text: userData!['gender']);
-        _birthOfDateController = TextEditingController(
-          text: userData!['birthOfDate'] ?? 'Not provided',
-        );
+        _usernameController.text = userData!['username'];
+        _emailController.text = userData!['email'];
+        _genderController.text = userData!['gender'];
+        _birthOfDateController.text =
+            userData!['birthOfDate'] ?? 'Not provided';
 
         // Khởi tạo link ảnh đại diện
         _avatarUrl = userData!['avatar'];
@@ -150,6 +153,22 @@ class _UserProfile extends State<UserInfo> {
     }
   }
 
+  // Hàm chọn ngày
+  Future<void> _selectDate(BuildContext context) async {
+    final DateTime? selectedDate = await showDatePicker(
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime(1900), // Ngày đầu tiên được chọn
+      lastDate: DateTime.now(), // Ngày cuối cùng được chọn
+    );
+    if (selectedDate != null && selectedDate != DateTime.now()) {
+      // Cập nhật giá trị ngày sinh theo định dạng yyyy-MM-dd
+      _birthOfDateController.text =
+          selectedDate.toLocal().toString().split(' ')[0];
+    }
+  }
+
+  // Build giao diện
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -174,9 +193,8 @@ class _UserProfile extends State<UserInfo> {
                         SizedBox(height: 20),
                         _buildEditableField('Username', _usernameController),
                         _buildEditableField('Email', _emailController),
-                        _buildEditableField('Gender', _genderController),
-                        _buildEditableField(
-                            'Birth of Date', _birthOfDateController),
+                        _buildGenderField(), // Giới tính chọn Nam/Nữ
+                        _buildBirthOfDateField(),
                         SizedBox(height: 20),
                         Center(
                           child: ElevatedButton(
@@ -218,6 +236,7 @@ class _UserProfile extends State<UserInfo> {
     );
   }
 
+  // Widget để hiển thị trường chỉnh sửa thông tin người dùng
   Widget _buildEditableField(String label, TextEditingController controller) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
@@ -235,6 +254,71 @@ class _UserProfile extends State<UserInfo> {
           }
           return null;
         },
+      ),
+    );
+  }
+
+  // Widget cho ngày sinh với date picker
+  Widget _buildBirthOfDateField() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      child: GestureDetector(
+        onTap: () => _selectDate(context), // Mở date picker khi nhấn vào ô
+        child: AbsorbPointer(
+          child: TextFormField(
+            controller: _birthOfDateController,
+            decoration: InputDecoration(
+              labelText: 'Birth of Date',
+              border:
+                  OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+              filled: true,
+              fillColor: Colors.white,
+            ),
+            validator: (value) {
+              if (value == null || value.isEmpty) {
+                return 'Ngày sinh không được để trống';
+              }
+              return null;
+            },
+          ),
+        ),
+      ),
+    );
+  }
+
+  // Widget cho giới tính
+  Widget _buildGenderField() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      child: DropdownButtonFormField<String>(
+        value: _genderController.text.isEmpty ? null : _genderController.text,
+        decoration: InputDecoration(
+          labelText: 'Gender',
+          border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+          filled: true,
+          fillColor: Colors.white,
+        ),
+        onChanged: (String? newValue) {
+          setState(() {
+            _genderController.text = newValue!;
+          });
+        },
+        validator: (value) {
+          if (value == null || value.isEmpty) {
+            return 'Giới tính không được để trống';
+          }
+          return null;
+        },
+        items:
+            <String>['Nam', 'Nữ'].map<DropdownMenuItem<String>>((String value) {
+          return DropdownMenuItem<String>(
+            value: value,
+            child: Text(
+              value,
+              style: TextStyle(fontWeight: FontWeight.normal),
+            ),
+          );
+        }).toList(),
       ),
     );
   }
